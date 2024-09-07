@@ -5,7 +5,7 @@ exports.createUser=async(req,res)=>{
     const user=new User(req.body);
     try{ 
         const result=await user.save();
-        res.status(200).json(result);
+        res.status(200).json({id:result.id, role:result.role});
     }catch(err){
         res.status(400).json(err);
     }
@@ -21,7 +21,7 @@ exports.loginUser=async(req,res)=>{
         }
         else if(user.password===req.body.password)
         {
-            res.status(200).json({id:user.id, email:user.email, name:user.name});
+            res.status(200).json({id:user.id, role:user.role});
         }
         else
         {
