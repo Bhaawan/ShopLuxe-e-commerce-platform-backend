@@ -1,9 +1,27 @@
-const express=require('express');
+const express = require('express');
 const { createUser, loginUser, checkUser } = require('../controller/Auth');
 const passport = require('passport');
-const router=express.Router();
 
-router.post('/signup', createUser).post('/login', passport.authenticate('local'), loginUser)
-.get('/check', passport.authenticate('jwt'), checkUser);
+const router = express.Router();
+//  /auth is already added in base path
+router.post('/signup', createUser)
+.get('/check',passport.authenticate('jwt'), checkUser)
+.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    if (!user) {
+      // Handle authentication failure and send back a JSON error response
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
+    req.login(user, (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Login failed' });
+      }
+      return res.json(user);
+    });
+  })(req, res, next);
+});
 
-exports.router=router;
+exports.router = router;
