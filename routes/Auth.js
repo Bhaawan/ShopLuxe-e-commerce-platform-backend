@@ -1,11 +1,11 @@
 const express = require('express');
-const { createUser, loginUser, checkUser } = require('../controller/Auth');
+const { createUser, loginUser, checkAuth } = require('../controller/Auth');
 const passport = require('passport');
 
 const router = express.Router();
 //  /auth is already added in base path
-router.post('/signup', createUser)
-.get('/check',passport.authenticate('jwt'), checkUser)
+router
+.post('/signup', createUser)
 .post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
@@ -22,6 +22,7 @@ router.post('/signup', createUser)
       return res.json(user);
     });
   })(req, res, next);
-});
+})
+.get('/check',passport.authenticate('jwt'), checkAuth);
 
 exports.router = router;

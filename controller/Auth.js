@@ -22,7 +22,7 @@ exports.createUser = async (req, res) => {
             res.status(400).json(err);
           } else {
             const token = jwt.sign(sanitizeUser(doc), SECRET_KEY);
-            res.cookie('jwt', token, { expires: new Date(Date.now() + 360000000), httpOnly: true }).status(201).json(token);
+            res.cookie('jwt', token, { expires: new Date(Date.now() + 360000000), httpOnly: true }).status(201).json({id:doc.id, role:doc.role});
           }
         });
       }
@@ -36,6 +36,13 @@ exports.loginUser = async (req, res) => {
   res.cookie('jwt', req.user.token, { expires: new Date(Date.now() + 3600000), httpOnly: true }).status(201).json(req.user.token);
 };
 
-exports.checkUser = async (req, res) => {
-  res.json({status:'success',user: req.user});
+exports.checkAuth = async (req, res) => {
+  if(req.user)
+  {
+    res.json(req.user);
+  }
+  else
+  {
+    res.sendStatus(401);
+  }
 };
