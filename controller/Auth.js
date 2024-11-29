@@ -1,6 +1,6 @@
 const { User } = require('../model/User');
 const crypto = require('crypto');
-const { sanitizeUser } = require('../services/common');
+const { sanitizeUser, sendMail } = require('../services/common');
 const SECRET_KEY = 'SECRET_KEY';
 const jwt = require('jsonwebtoken');
 
@@ -44,5 +44,22 @@ exports.checkAuth = async (req, res) => {
   else
   {
     res.sendStatus(401);
+  }
+};
+
+exports.resetPasswordRequest = async (req, res) => {
+
+  const resetPage="https://localhost:3000/reset-password";
+  const subject="Reset your password for LuxCart";
+  const html=`<p>Click <a href='${resetPage}'>here</a> to reset password</p>`
+
+  if(req.body.email)
+  {
+    const response=await sendMail({to:req.body.email, subject, html});
+    res.json(response);
+  }
+  else
+  {
+    res.sendStatus(400);
   }
 };
